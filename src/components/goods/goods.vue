@@ -2,114 +2,36 @@
     <div class="goods">
         <div class="menu-wrapper" ref="menuWrapper">
             <ul>
-                <li class="menu-item-selected">
-                    <span class="text">粥类</span>
-                </li>
-                <li class="menu-item">
-                    <span class="text">小吃</span>
-                </li>
-                <li class="menu-item">
-                    <span class='text'>饮品</span>
+                <li v-for="(item,index) in goods" v-on:click="menuClick(index,$event)" v-bind:class="index==menuCurrentIndex?'menu-item-selected':'menu-item'">
+                    <span class="text">
+                        <iconMap v-show="item.type>0" v-bind:iconType="item.type"></iconMap>
+                        {{item.name}}
+                    </span>
                 </li>
             </ul>
         </div>
         <div class="foods-wrapper" id="foods-wrapper" ref="foodsWrapper">
             <ul>
-                <li class="food-list food-list-hook">
-                    <h1>粥类</h1>
+                <li v-for="item in goods" class="food-list food-list-hook">
+                    <h1>{{item.name}}</h1>
                     <ul>
-                        <li class="food-item">
+                        <li v-for="food in item.foods" class="food-item">
                             <div class="icon">
-                                <img  width="57" height="57" src="src/components/goods/img/nanguazhou-icon.jpeg"/>
+                                <img  width="57" height="57" v-bind:src="food.icon"/>
                             </div>
                             <div class="content">
-                                <h2>南瓜粥</h2>
-                                <p class="description">有点甜</p>
+                                <h2>{{food.name}}</h2>
+                                <p class="description">{{food.description}}</p>
                                 <div class="sell-info">
-                                    <span class="sellCount">月售11份</span>
-                                    <span class="rating">好评率98%</span>
+                                    <span class="sellCount">{{'月售'+ food.sellCount +'份'}}</span>
+                                    <span class="rating">{{'好评率'+ food.rating +'%'}}</span>
                                 </div>
                                 <div class="price">
-                                    <span class="newPrice"><span class="unit">￥</span>15</span>
-                                    <span class="oldPrice">￥18</span>
+                                    <span class="newPrice"><span class="unit">￥</span>{{food.price}}</span>
+                                    <span v-if="food.oldPrice" class="oldPrice">{{'￥' + food.oldPrice}}</span>
                                 </div>
-                            </div>
-                        </li>
-                        <li class="food-item">
-                            <div class="icon">
-                                <img  width="57" height="57" src="src/components/goods/img/hongdouyimimeifuzhou-icon.jpeg"/>
-                            </div>
-                            <div class="content">
-                                <h2>红豆薏米美肤粥</h2>
-                                <p class="description">美肤噢</p>
-                                <div class="sell-info">
-                                    <span class="sellCount">月售11份</span>
-                                    <span class="rating">好评率98%</span>
-                                </div>
-                                <div class="price">
-                                    <span class="newPrice"><span class="unit">￥</span>15</span>
-                                    <span class="oldPrice">￥18</span>
-                                </div>
-                            </div>
-                        </li>
-                    </ul>
-                </li>
-                <li class="food-list food-list-hook">
-                    <h1>小吃</h1>
-                    <ul>
-                        <li class="food-item">
-                            <div class="icon">
-                                <img  width="57" height="57" src="src/components/goods/img/xianbing-icon.jpeg"/>
-                            </div>
-                            <div class="content">
-                                <h2>馅饼</h2>
-                                <p class="description">里面有牛肉</p>
-                                <div class="sell-info">
-                                    <span class="sellCount">月售11份</span>
-                                    <span class="rating">好评率98%</span>
-                                </div>
-                                <div class="price">
-                                    <span class="newPrice"><span class="unit">￥</span>15</span>
-                                    <span class="oldPrice">￥18</span>
-                                </div>
-                            </div>
-                        </li>
-                        <li class="food-item">
-                            <div class="icon">
-                                <img  width="57" height="57" src="src/components/goods/img/babaojiangcai-icon.jpeg"/>
-                            </div>
-                            <div class="content">
-                                <h2>八宝酱菜</h2>
-                                <p class="description">里面有牛肉</p>
-                                <div class="sell-info">
-                                    <span class="sellCount">月售11份</span>
-                                    <span class="rating">好评率98%</span>
-                                </div>
-                                <div class="price">
-                                    <span class="newPrice"><span class="unit">￥</span>15</span>
-                                    <span class="oldPrice">￥18</span>
-                                </div>
-                            </div>
-                        </li>
-                    </ul>
-                </li>
-                <li class="food-list food-list-hook">
-                    <h1>饮品</h1>
-                    <ul>
-                        <li class="food-item">
-                            <div class="icon">
-                                <img  width="57" height="57" src="src/components/goods/img/jiaduobao-icon.jpeg"/>
-                            </div>
-                            <div class="content">
-                                <h2>加多宝</h2>
-                                <p class="description">下下火</p>
-                                <div class="sell-info">
-                                    <span class="sellCount">月售11份</span>
-                                    <span class="rating">好评率98%</span>
-                                </div>
-                                <div class="price">
-                                    <span class="newPrice"><span class="unit">￥</span>15</span>
-                                    <span class="oldPrice">￥18</span>
+                                <div class="cartcontrol-wrapper">
+                                    <cartcontrol v-bind:food="food"></cartcontrol>
                                 </div>
                             </div>
                         </li>
@@ -117,13 +39,104 @@
                 </li>
             </ul>
         </div>
+        <shopCart v-bind:selectedFoods="selectedFoods" v-bind:minPrice="seller.minPrice" v-bind:deliveryPrice="seller.deliveryPrice"></shopCart>
     </div>
 </template>
 
 <script>
-    export default {
-        
+
+import axios from 'axios'
+import iconMap from '../iconMap/iconMap.vue'
+import cartcontrol from '../cartcontrol/cartcontrol.vue'
+import shopCart from '../shopCart/shopCart.vue'
+import Vue from 'vue'
+import BScroll from 'better-scroll'
+
+const ERR_OK = 0
+
+export default {
+    props: {
+        seller: Object
+    },
+    data () {
+        return {
+            goods: [],
+            listHeight: [],
+            foodsScrollY: 0,
+            selectedFood: ''
+        }
+    },
+    created () {
+        axios.get('static/data.json').then((response) => {
+            this.goods = response.data.goods;
+            this.$nextTick(() => {
+                this._initScroll();
+                this._calculateHeight();
+            })
+        });
+    },
+    computed: {
+        menuCurrentIndex () {
+            for (let i = 0, l = this.listHeight.length; i < l; i++) {
+                let topHeight = this.listHeight[i];
+                let bottomHeight = this.listHeight[i + 1];
+                if(!bottomHeight || (this.foodsScrollY >= topHeight && this.foodsScrollY < bottomHeight)) {
+                    return i;
+                }
+            }
+            return 0;
+        },
+        selectedFoods () {
+            let foods = [];
+            this.goods.forEach((good) => {
+                good.foods.forEach((food) => {
+                    if (food.count) {
+                        foods.push(food);
+                    }
+                });
+            });
+            return foods;
+        }
+    },
+    methods: {
+        _initScroll () {
+            this.menuWrapper = new BScroll(this.$refs.menuWrapper, {
+                click: true
+            });
+            this.foodsScroll = new BScroll(this.$refs.foodsWrapper, {
+                click:true,
+                probeType: 3
+                //1：滚动的时候会派发scroll事件，会截流。2：滚动的时候实时派发scroll事件，不会截流。 3：除了实时派发scroll事件，在swipe的情况下仍然能实时派发scroll事件
+            });
+            //监听滚动事件
+            this.foodsScroll.on('scroll', (pos) => {
+                this.foodsScrollY = Math.abs(Math.round(pos.y));
+            });
+        },
+        _calculateHeight () {
+            let foodList = this.$refs.foodsWrapper.querySelectorAll('.food-list-hook');
+            let height = 0;
+            this.listHeight.push(height);
+            for(let i = 0, l = foodList.length; i < l; i++) {
+                let item = foodList[i];
+                height += item.clientHeight;
+                this.listHeight.push(height);
+            }
+        },
+        menuClick (index, event) {
+            if (!event._constructed) {
+                return;
+            }
+            this.foodsScroll.scrollTo(0, -this.listHeight[index], 300);
+        }
+    },
+    components: {
+        iconMap,
+        cartcontrol,
+        shopCart
     }
+}
+
 </script>
 
 <style lang="less" rel="stylesheet/less">
@@ -136,6 +149,7 @@
         top: 174px;
         bottom: 46px;
         width: 100%;
+        overflow: hidden;
         .menu-wrapper {
             flex: 0 0 80px;
             width: 80px;
@@ -151,7 +165,7 @@
                 display: table;
                 height: 54px;
                 line-height: 14px;
-                width: 56px;
+                width: 100%;
                 padding: 0 12px;
                 &:last-child:after {
                     content: none;
@@ -162,6 +176,9 @@
                     font-size: 12px;
                     white-space: normal;
                     line-height: 14px;
+                    .iconMap {
+                        vertical-align: middle;
+                    }
                 }
             }
             .menu-item:after {
@@ -185,6 +202,7 @@
                     color: rgb(147,153,159);
                     background: #f3f5f7;
                     border-left: 2px solid #d9dde1;
+                    margin-top: 0;
                 }
                 .food-item {
                     position: relative;
@@ -236,6 +254,12 @@
                                 color: rgb(147,153,159);
                                 padding-left: 4px;
                             }
+                        }
+                        .cartcontrol-wrapper {
+                            position: absolute;
+                            right: 0;
+                            bottom: 12px;
+                            z-index: 20;
                         }
                     }
                 }

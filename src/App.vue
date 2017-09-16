@@ -1,32 +1,37 @@
 <template>
   <div id="app">
-    <v-header></v-header>
+    <v-header v-bind:seller="seller"></v-header>
     <div class="tab">
       <div class="tab-item">
         <router-link to="/goods">商品</router-link>
       </div>
       <div class="tab-item">
-        <router-link>评论</router-link>
-      </div>
-      <div class="tab-item">
-        <router-link>商家</router-link>
+        <router-link to="/ratings">评论</router-link>
       </div>
     </div>
     <keep-alive>
-      <router-view></router-view>
+      <router-view v-bind:seller="seller"></router-view>
     </keep-alive>
   </div>
 </template>
 
 <script>
 import header from './components/header/header.vue'
+import axios from 'axios'
+
+const ERR_OK = 0
 
 export default {
-  name: 'app',
   data () {
     return {
-
+      seller: {},
+      title: '123'
     };
+  },
+  created() {
+    axios.get('static/data.json').then((response) => {
+      this.seller = response.data.seller;
+    });
   },
   components: {
     'v-header': header

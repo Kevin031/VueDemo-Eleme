@@ -7,15 +7,15 @@
             <div class="content">
                 <div class="title">
                     <span class="brand"></span>
-                    <span class="name">美味粥坊</span>
+                    <span class="name">{{seller.name}}</span>
                 </div>
                 <div class="description">
-                    正宗美味 / 15分钟送达
+                    {{seller.description + ' / ' + seller.deliveryTime + '分钟送达'}}
                 </div>
-                <div class="supports">
+                <div class="supports" v-if="seller.supports">
                     <div class="supports_desc">
-                        <span class="icon"></span>
-                        <span class="text">该商家支持发票,请下单写好发票抬头</span>
+                        <span class="icon" v-bind:class="iconClassMap[seller.supports[0].type]"></span>
+                        <span class="text">{{seller.supports[0].description}}</span>
                     </div>
                 </div>
             </div>
@@ -26,42 +26,26 @@
         </div>
         <div class="bulletin-wrapper" v-on:click="showDetails()">
             <span class="bulletin-title"></span>
-            <span class="bulletin-text">这是商家公告</span>
+            <span class="bulletin-text">{{seller.bulletin}}</span>
             <i class="icon-keyboard_arrow_right"></i>
         </div>
         <div class="fade-page" v-if="detailShow">
             <div class="detail">
                 <div class="detail-wrapper clearfix">
                     <div class="detail-main">
-                        <h1 class="name">美味粥坊</h1>
+                        <h1 class="name">{{seller.name}}</h1>
                         <div class="star-wrapper">
-                            <v-star></v-star>
+                            <star v-bind:size="48" v-bind:score="seller.score"></star>
                         </div>
                         <div class="title">
                             <div class="line"></div>
                             <div class="text">优惠信息</div>
                             <div class="line"></div>
                         </div>
-                        <ul class="supports">
-                            <li class="support-item">
-                                <span class="icon decrease"></span>
-                                <span class="text">该商家支持发票,请下单写好发票抬头</span>
-                            </li>
-                            <li class="support-item">
-                                <span class="icon decrease"></span>
-                                <span class="text">该商家支持发票,请下单写好发票抬头</span>
-                            </li>
-                            <li class="support-item">
-                                <span class="icon decrease"></span>
-                                <span class="text">该商家支持发票,请下单写好发票抬头</span>
-                            </li>
-                            <li class="support-item">
-                                <span class="icon decrease"></span>
-                                <span class="text">该商家支持发票,请下单写好发票抬头</span>
-                            </li>
-                            <li class="support-item">
-                                <span class="icon decrease"></span>
-                                <span class="text">该商家支持发票,请下单写好发票抬头</span>
+                        <ul class="supports" v-if="seller.supports">
+                            <li class="support-item" v-for="item in seller.supports">
+                                <span class="icon" v-bind:class="iconClassMap[item.type]"></span>
+                                <span class="text">{{item.description}}</span>
                             </li>
                         </ul>
                         <div class="title">
@@ -69,7 +53,7 @@
                             <div class="text">商家公告</div>
                             <div class="line"></div>
                         </div>
-                        <div class="bulletin">这是商家公告</div>
+                        <div class="bulletin">{{seller.bulletin}}</div>
                     </div>
                 </div>
                 <div class="detail-close" v-on:click="hideDetails()">
@@ -88,13 +72,18 @@
     import star from '../star/star.vue'
 
     export default {
-        prop: {
-
+        props: {
+            seller: {
+                type: Object
+            }
+        },
+        created () {
+            this.iconClassMap = ['decrease','discount','special','invoice','guarantee']
         },
         components: {
-            'v-star':star
+            star
         },
-        data() {
+        data () {
             return {
                 detailShow: false
             }
@@ -119,7 +108,6 @@
     position: relative;
     background: rgba(7,17,27,0.5);
     color: #fff;
-    blur: 10px;
     overflow: hidden;
     .content-wrapper {
         position: relative;
@@ -163,9 +151,27 @@
                     width: 12px;
                     height: 12px;
                     margin-right: 4px;
-                    background: url('img/invoice_1@2x.png');
-                    background-size: 12px 12px;
                     background-repeat: no-repeat;
+                    &.decrease {
+                        background: url('img/decrease_1@2x.png');
+                        background-size: 12px 12px;
+                    }
+                    &.discount {
+                        background: url('img/discount_1@2x.png');
+                        background-size: 12px 12px;
+                    }
+                    &.guarantee {
+                        background: url('img/guarantee_1@2x.png');
+                        background-size: 12px 12px;
+                    }
+                    &.invoice {
+                        background: url('img/invoice_1@2x.png');
+                        background-size: 12px 12px;
+                    }
+                    &.special {
+                        background: url('img/special_1@2x.png');
+                        background-size: 12px 12px;
+                    }
                 }
                 .text {
                     line-height: 12px;
@@ -331,10 +337,9 @@
         }
     }
     .detail-close {
-        position: relative;
         width: 32px;
         height: 32px;
-        margin: -64px auto 0 auto;
+        margin: 0 auto;
         clear: both;
         font-size: 32px;
         color: rgba(255,255,255,0.5);
