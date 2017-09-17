@@ -3,6 +3,7 @@ import App from './App.vue'
 import VueRouter from 'vue-router'
 import goods from './components/goods/goods.vue'
 import ratings from './components/ratings/ratings.vue'
+import seller from './components/seller/seller.vue'
 import Vuex from 'vuex'
 
 Vue.use(VueRouter)
@@ -31,6 +32,9 @@ const router = new VueRouter({
   {
     path: '/ratings',
     component: ratings
+  }, {
+    path: '/seller',
+    component: seller
   }],
   linkActiveClass: 'active'
 })
@@ -43,7 +47,7 @@ new Vue({
     App
   },
   data: {
-    
+    eventHub: new Vue()
   }
 }).$mount('#app')
 

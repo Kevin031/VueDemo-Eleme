@@ -1,5 +1,5 @@
 <template>
-  <div id="star" class="star-48">
+  <div id="star" v-bind:class="starType">
     <span v-for="itemClass in itemClasses" v-bind:class="itemClass" class="star-item"></span>
   </div>
 </template>
@@ -55,6 +55,7 @@ export default {
             background-repeat: no-repeat;
         }
         &.star-48 {
+            display: inline-block;
             .star-item {
                 width: 20px;
                 height: 20px;
@@ -77,6 +78,7 @@ export default {
             }
         }
         &.star-36 {
+            display: inline-block;
             .star-item {
                 width: 15px;
                 height: 15px;
@@ -99,6 +101,7 @@ export default {
             }
         }
         &.star-24 {
+            display: inline-block;
             .star-item {
                 width: 10px;
                 height: 10px;

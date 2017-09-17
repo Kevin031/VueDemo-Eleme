@@ -29,8 +29,8 @@
             <span class="bulletin-text">{{seller.bulletin}}</span>
             <i class="icon-keyboard_arrow_right"></i>
         </div>
-        <div class="fade-page" v-if="detailShow">
-            <div class="detail">
+        <transition name="fade">
+            <div v-if="detailShow" class="detail">
                 <div class="detail-wrapper clearfix">
                     <div class="detail-main">
                         <h1 class="name">{{seller.name}}</h1>
@@ -60,7 +60,7 @@
                     <i class="icon-close"></i>
                 </div>
             </div>
-        </div>
+        </transition>
         <div class="background">
             <img src="../../assets/images/seller_avatar_256px.jpg" width="100%" height="100%" />
         </div>
@@ -242,7 +242,7 @@
         filter: blur(10px);
         z-index: -1;
     }
-    .fade-page {
+    .detail  {
         position: fixed;
         top: 0;
         left: 0;
@@ -250,8 +250,7 @@
         width: 100%;
         height: 100%;
         background: rgba(7,17,27,0.8);
-        .detail {
-            backdrop-filter: blur(10px);
+        backdrop-filter: blur(10px);
             .detail-wrapper {
                 min-height: 100%;
                 width: 100%;

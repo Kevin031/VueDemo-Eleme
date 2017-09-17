@@ -4,26 +4,26 @@
             <div class="info">
                 <div class="mark">
                     <div class="num">
-                        30
+                        {{seller.score}}
                     </div>
                     <div class="text">综合评分</div>
-                    <div class="contrast">高于周边商家98%</div>
+                    <div class="contrast">高于周边商家{{seller.rankRate}}%</div>
                 </div>
                 <div class="stars">
                     <div class="stars">
                         <div class="serviceScore">
                             <span class="text">服务态度</span>
-                            <star v-bind:size="36"></star>
-                            <span class="num">98</span>
+                            <star v-bind:size="36" v-bind:score="seller.serviceScore"></star>
+                            <span class="num">{{seller.serviceScore}}</span>
                         </div>
                         <div class="foodScore">
                             <span class="text">服务态度</span>
-                            <star v-bind:size="36"></star>
-                            <span class="num">97</span>
+                            <star v-bind:size="36" v-bind:score="seller.foodScore"></star>
+                            <span class="num">{{seller.foodScore}}</span>
                         </div>
                         <div class="deliveryTime">
                             <span class="text">送达时间</span>
-                            <span class="time">38分钟</span>
+                            <span class="time">{{seller.deliveryTime}}分钟</span>
                         </div>
                     </div>
                 </div>
@@ -31,35 +31,33 @@
             <div class="divider"></div>
             <div class="evaluation">
                 <div class="classify">
-                    <span class="item active bad badActive">123</span>
-                    <span class="item active">456</span>
-                    <span class="item active bad">789</span>
+                    <span v-for="(item, index) in classifyArr" v-bind:class="{'active':item.active, 'bad':index==2, 'badActive':item.active&&index==2}" class="item" v-on:click="filterEvel(item)">{{item.name}} <span class="count">{{item.count}}</span></span>
                 </div>
-                <div class="switch">
-                    <span class="icon-check_circle"></span>
+                <div class="switch" v-on:click="evelflag=!evelflag">
+                    <span class="icon-check_circle" v-bind:class="{'on':evelflag}"></span>
                     <span class="text">只看有内容的评价</span>
                 </div>
                 <div class="evel-list">
                     <ul>
-                        <li class="evel">
+                        <li class="evel" v-for="evel in evelArr">
                             <div class="avatar">
-                                <img width="28" height="28" />
+                                <img v-bind:src="evel.avatar" width="28" height="28" />
                             </div>
                             <div class="content">
                                 <div class="user">
-                                    <span class="name">123132</span>
-                                    <span class="rateTime">2017.10.05</span>
+                                    <span class="name">{{evel.username}}</span>
+                                    <span class="rateTime">{{evel.rateTime | time}}</span>
                                 </div>
                                 <div class="star-wrapper">
-                                    <star v-bind:size="24"></star>
-                                    <div class="deliveryTime">40分钟送达</div>
+                                    <star v-bind:size="24" v-bind:score="evel.score"></star>
+                                    <span class="deliveryTime" v-show="evel.deliveryTime">{{evel.deliveryTime}}分钟送达</span>
                                 </div>
                                 <div class="text">
-                                    很好吃，包装也很不错
+                                    {{evel.text}}
                                 </div>
                                 <div class="recommend">
-                                    <span class="icon icon-thumb_up"></span>
-                                    <span class="dish">123</span>
+                                    <span class="icon icon-thumb_up" v-show="evel.recommend.length"></span>
+                                    <span class="dish" v-for="dish in evel.recommend">{{dish}}</span>
                                 </div>
                             </div>
                         </li>
@@ -73,10 +71,96 @@
 <script>
 
 import star from '../star/star.vue'
+import axios from 'axios'
+import BScroll from 'better-scroll'
 
 export default {
     components: {
         star
+    },
+    data () {
+        return {
+            ratings: [],
+            seller: {},
+            classifyArr: [{
+                name: '全部',
+                count: 0,
+                active: true
+            }, {
+                name: '推荐',
+                count: 0,
+                active: false
+            }, {
+                name: '吐槽',
+                count: 0,
+                active: false
+            }],
+            evelflag: true
+        }
+    },
+    created () {
+        this._initRatings()
+    },
+    computed: {
+        evelArr () {
+            let selectIndex = 0;
+            this.classifyArr.forEach((data, index) => {
+                if (data.active) {
+                    selectIndex = index;
+                }
+            })
+            if (this.scroll) {
+                this.$nextTick(() => {
+                    this.scroll.refresh;
+                })
+            }
+            return selectIndex ? this.ratings.filter((data) => this.evelflag ? data.rateType === selectIndex - 1 && data.text : data.rateType === selectIndex - 1) :this.ratings.filter((data) => this.evelflag ? data.text : true); //*
+        }
+    },
+    methods: {
+        _initRatings () {
+            axios.get('static/data.json').then((res) => {
+                this.ratings = res.data.ratings;
+                this.seller = res.data.seller;
+                this._initClassifyArr();
+                this.$nextTick(() => {
+                    if (!this.scroll) {
+                        this.scroll = new BScroll(this.$refs.ratingsWrapper, {
+                            click: true
+                        });
+                    } else {
+                        this.scroll.refresh();
+                    }
+                });
+            });
+        },
+        _initClassifyArr () {
+            this.classifyArr.forEach((data,index) => {
+                if (index) {
+                    data.count = this.ratings.filter((temp) => temp.rateType === index - 1).length;
+                } else {
+                    data.count = this.ratings.length;
+                }
+            });
+        },
+        filterEvel (item) {
+            this.classifyArr.forEach((data) => {
+                data.active = false;
+            });
+            item.active = true;
+        }
+    },
+    filters: {
+        time: function (value) {
+            let year = (new Date(value)).toLocaleDateString();
+            let month = year.match(/\d{4}\/{1}(\d+)/)[1];
+            if (month.length === 1) {
+                year = year.replace(/\//,"/0");
+            }
+            let time = year + " " + (new Date(value)).getHours() + ":" + (new Date(value)).getMinutes();
+            time = time.replace(/\//g, "-");
+            return time;
+        }
     } 
 }
 
@@ -101,20 +185,25 @@ export default {
             background-color: rgba(255,255,255,0);
             border-right: 1px solid rgba(7,17,27,0.1);
             text-align: center;
+            position: relative;
             .num {
-                font-size: 24px;
+                font-size: 28px;
                 color: rgb(255,153,0);
                 line-height: 28px;
+                margin-bottom: 6px;
+                margin-top: 12px;
             }
             .text {
                 padding: 6px 0 8px 0;
                 font-size: 12px;
-                color: rgb(7,17,27);
+                color: #07111b;
                 line-height: 12px;
+                margin-bottom: 8px;
+                font-weight: 400;
             }
             .contrast {
                 font-size: 10px;
-                color: rgb(7,17,27);
+                color: #93999f;
                 line-height: 10px;
                 margin-bottom: 6px;
             }
@@ -250,6 +339,11 @@ export default {
                         font-size: 9px;
                         color: rgb(147,153,159);
                         line-height: 16px;
+                        border: 1px solid rgba(7,17,27,0.1);
+                        padding: 2px 6px;
+                        margin-right: 8px;
+                        white-space: normal;
+                        margin-top: 4px;
                     }
                 }
             }
