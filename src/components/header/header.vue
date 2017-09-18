@@ -242,7 +242,7 @@
         filter: blur(10px);
         z-index: -1;
     }
-    .detail  {
+    .detail {
         position: fixed;
         top: 0;
         left: 0;
@@ -251,97 +251,102 @@
         height: 100%;
         background: rgba(7,17,27,0.8);
         backdrop-filter: blur(10px);
-            .detail-wrapper {
-                min-height: 100%;
-                width: 100%;
-                .detail-main {
-                    margin-top: 64px;
-                    padding-bottom: 64px;
-                    .name {
-                        font-size: 16px;
-                        color: rgb(255,255,255);
+        .detail-wrapper {
+            min-height: 100%;
+            width: 100%;
+            .detail-main {
+                margin-top: 64px;
+                padding-bottom: 64px;
+                .name {
+                    font-size: 16px;
+                    color: rgb(255,255,255);
+                    font-weight: 700;
+                    width: 100%;
+                    line-height: 16px;
+                    text-align: center;
+                }
+                .star-wrapper {
+                    margin: 16px 11px 28px 0;
+                    text-align: center;
+                }
+                .title {
+                    display: flex;
+                    width: 80%;
+                    margin: 0 auto 24px auto;
+                    .line {
+                        display: inline-block;
+                        flex: 1;
+                        background: rgba(255,255,255,0.2);
+                        height: 1px;
+                        margin: auto;
+                    }
+                    .text {
+                        padding: 0 12px;
+                        font-size: 14px;
                         font-weight: 700;
-                        width: 100%;
-                        line-height: 16px;
-                        text-align: center;
                     }
-                    .star-wrapper {
-                        margin: 16px 11px 28px 0;
-                        text-align: center;
-                    }
-                    .title {
-                        display: flex;
-                        width: 80%;
-                        margin: 0 auto 24px auto;
-                        .line {
-                            display: inline-block;
-                            flex: 1;
-                            background: rgba(255,255,255,0.2);
-                            height: 1px;
-                            margin: auto;
-                        }
-                        .text {
-                            padding: 0 12px;
-                            font-size: 14px;
-                            font-weight: 700;
-                        }
-                    }
-                    .supports {
-                        padding: 0 0 28px 36px;
-                        .support-item {
-                            color: rgb(255,255,255);
-                            padding: 0 6px 12px 16px;
-                            .text {
-                                vertical-align: middle;
-                                font-size: 12px;
-                                font-weight: 200;
-                                color: rgb(255,255,255);
-                                line-height: 12px;
-                            }
-                            .icon {
-                                display: inline-block;
-                                vertical-align: middle;
-                                width: 16px;
-                                height: 16px;
-                                margin-right: 6px;
-                                background-size: 100% 100%!important;
-                                background-repeat: no-repeat;
-                                &.decrease {
-                                    background: url('img/decrease_2@2x.png');
-                                }
-                                &.discount {
-                                    background: url('img/discount_2@2x.png');
-                                }
-                                &.guarantee {
-                                    background: url('img/guarantee_2@2x.png');
-                                }
-                                &.invoice {
-                                    background: url('img/invoice_2@2x.png');
-                                }
-                                &.special {
-                                    background: url('img/special_2@2x.png');
-                                }
-                            }
-                        }
-                    }
-                    .bulletin {
-                        padding: 0 48px;
-                        font-size: 12px;
-                        font-weight: 200;
+                }
+                .supports {
+                    padding: 0 0 28px 36px;
+                    .support-item {
                         color: rgb(255,255,255);
-                        line-height: 24px;
+                        padding: 0 6px 12px 16px;
+                        .text {
+                            vertical-align: middle;
+                            font-size: 12px;
+                            font-weight: 200;
+                            color: rgb(255,255,255);
+                            line-height: 12px;
+                        }
+                        .icon {
+                            display: inline-block;
+                            vertical-align: middle;
+                            width: 16px;
+                            height: 16px;
+                            margin-right: 6px;
+                            background-size: 100% 100%!important;
+                            background-repeat: no-repeat;
+                            &.decrease {
+                                background: url('img/decrease_2@2x.png');
+                            }
+                            &.discount {
+                                background: url('img/discount_2@2x.png');
+                            }
+                            &.guarantee {
+                                background: url('img/guarantee_2@2x.png');
+                            }
+                            &.invoice {
+                                background: url('img/invoice_2@2x.png');
+                            }
+                            &.special {
+                                background: url('img/special_2@2x.png');
+                            }
+                        }
                     }
+                }
+                .bulletin {
+                    padding: 0 48px;
+                    font-size: 12px;
+                    font-weight: 200;
+                    color: rgb(255,255,255);
+                    line-height: 24px;
                 }
             }
         }
-    }
-    .detail-close {
-        width: 32px;
-        height: 32px;
-        margin: 0 auto;
-        clear: both;
-        font-size: 32px;
-        color: rgba(255,255,255,0.5);
+        .detail-close {
+            position: relative;
+            width: 32px;
+            height: 32px;
+            margin: -64px auto 0 auto;
+            clear: both;
+            font-size: 32px;
+        }
+        &.fade-enter-active, &.fade-leave-active {
+            transition: opacity 0.5s;
+        }
+        &.fade-enter, &.fade-leave-active {
+            opacity: 0;
+        }
     }
 }
 

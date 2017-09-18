@@ -21,6 +21,13 @@
                 {{payDesc}}
             </div>
         </div>
+        <div class="ball-container">
+            <transition name="drop" v-on:before-enter="beforeEnter" v-on:enter="enter" v-on:after-enter="afterEnter" v-for="(ball,index) in balls">
+                <div class="ball" v-show="ball.show">
+                    <div class="inner inner-hook"></div>
+                </div>
+            </transition>
+        </div>
         <div class="transHeight">
             <div class="shopcart-list" v-show="listShow">
                 <div class="list-header">
@@ -70,7 +77,19 @@ export default {
     },
     data () {
         return {
-            listShow: false
+            listShow: false,
+            dropBalls: [],
+            balls: [{
+                show: false
+            }, {
+                show: false
+            }, {
+                show: false
+            }, {
+                show: false
+            }, {
+                show: false
+            }]
         }
     },
     computed: {
@@ -129,6 +148,39 @@ export default {
                     this.foodlistScroll.refresh();
                 }
             });
+        },
+        beforeEnter (el) {
+            let count = this.balls.length;
+            while (count--) {
+                let ball = this.balls[count];
+                if (ball.show) {
+                    let rect = ball.el.getBoundingClientRect();
+                    let x = rect.left - 32;
+                    let y = -(window.innerHeight - rect.top -22);
+                    el.style.transform = `translate3d(0,${y}px,0)`;
+                    el.style.webkitTransform = `translate3d(0,${y}px,0)`;
+                    let inner = el.querySelector(".inner-hook");
+                    inner.style.webkitTransform = `translate3d(${x}px,0,0`;
+                    inner.style.transform = `translate3d(${x}px,0,0)`;
+                }
+            }
+        },
+        enter (el) {
+            el.offsetHeight; //浏览器重绘
+            this.$nextTick(() => {
+                el.style.transform = 'translate3d(0,0,0)';
+                el.style.webkitTransform = 'translate3d(0,0,0)';
+                let inner = el.querySelector(".inner-hook");
+                inner.style.transform = 'translate3d(0,0,0)';
+                inner.style.webkitTransform = 'translate3d(0,0,0)';
+            });
+        },
+        afterEnter (el) {
+            let ball = this.dropBalls.shift();
+            if (ball) {
+                ball.show = false;
+                el.style.display = 'none';
+            }
         },
         setEmpty () {
             this.selectedFoods.forEach((food) => {
@@ -241,6 +293,24 @@ export default {
             &.enough {
                 background: #00b43c;
                 color: white;
+            }
+        }
+    }
+    .ball-container {
+        ball {
+            position: fixed;
+            left: 32px;
+            bottom: 22px;
+            z-index: 200;
+            &.drop-enter, &.drop-enter-active {
+                transition: all 0.4s cubic-bezier(0.49,-0.29,0.75,0.41);
+                .inner {
+                    width: 16px;
+                    height: 16px;
+                    border-radius: 50%;
+                    background: rgb(0,160,220);
+                    transition: all 0.4s linear;
+                }
             }
         }
     }
