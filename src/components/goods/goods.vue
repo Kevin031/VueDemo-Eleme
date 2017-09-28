@@ -15,7 +15,7 @@
                 <li v-for="item in goods" class="food-list food-list-hook">
                     <h1>{{item.name}}</h1>
                     <ul>
-                        <li v-for="food in item.foods" class="food-item">
+                        <li v-for="food in item.foods" class="food-item" v-on:click="foodDetail(food)">
                             <div class="icon">
                                 <img  width="57" height="57" v-bind:src="food.icon"/>
                             </div>
@@ -40,6 +40,10 @@
             </ul>
         </div>
         <shopCart v-bind:selectedFoods="selectedFoods" v-bind:minPrice="seller.minPrice" v-bind:deliveryPrice="seller.deliveryPrice"></shopCart>
+        <myFood v-if="showMyFood" v-bind:food="selectedFood" rel="myFood"></myFood>
+        <transition name="fade-backdrop">
+            <div class="backdrop" v-show="showBackdrop" v-on:click="hideBackdrop"></div>
+        </transition>
     </div>
 </template>
 
@@ -49,10 +53,12 @@ import axios from 'axios'
 import iconMap from '../iconMap/iconMap.vue'
 import cartcontrol from '../cartcontrol/cartcontrol.vue'
 import shopCart from '../shopCart/shopCart.vue'
+import myFood from '../myFood/myFood.vue'
 import Vue from 'vue'
 import BScroll from 'better-scroll'
 
 const ERR_OK = 0
+const eventHub = new Vue()
 
 export default {
     props: {
@@ -63,7 +69,8 @@ export default {
             goods: [],
             listHeight: [],
             foodsScrollY: 0,
-            selectedFood: ''
+            selectedFood: '',
+            showMyFood: false
         }
     },
     created () {
@@ -96,6 +103,13 @@ export default {
                 });
             });
             return foods;
+        },
+        showBackdrop () {
+            if (this.showMyFood) {
+                return true;
+            }
+            this.showMyFood = false;
+            return false;
         }
     },
     methods: {
@@ -128,12 +142,23 @@ export default {
                 return;
             }
             this.foodsScroll.scrollTo(0, -this.listHeight[index], 300);
+        },
+        foodDetail (food) {
+            this.selectedFood = food;
+            this.$nextTick(() => {
+                this.showMyFood = true;
+            });
+            console.log(this.showMyFood);
+        },
+        hideBackdrop () {
+            this.showMyFood = false;
         }
     },
     components: {
         iconMap,
         cartcontrol,
-        shopCart
+        shopCart,
+        myFood
     }
 }
 
@@ -263,6 +288,22 @@ export default {
                         }
                     }
                 }
+            }
+        }
+        .backdrop {
+            position: fixed;
+            background: rgba(7,17,27,0.6);
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            backdrop-filter: blur(10px);
+            z-index: 20;
+            &.fade-backdrop-enter-active, &.fade-backdrop-leave-active {
+                transition: opacity 0.5s;
+            }
+            &.fade-backdrop-enter, &.fade-backdrop-leave-active {
+                opacity: 0;
             }
         }
     }

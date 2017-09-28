@@ -47,7 +47,7 @@ new Vue({
     App
   },
   data: {
-    eventHub: new Vue()
+    eventHub: new Vue() //组件之间的通信介质
   }
 }).$mount('#app')
 

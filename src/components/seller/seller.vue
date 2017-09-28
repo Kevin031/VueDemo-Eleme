@@ -82,41 +82,50 @@ export default {
         star: star,
         iconMap: iconMap
     },
+    props: {
+        seller: {
+            type: Object
+        }
+    },
     data () {
         return {
-            seller: {},
             collectflag: false
         }
     },
-    created () {
-        this._initSeller();
+    mounted () {
+        this.$nextTick(() => {
+            this._initSellerScroll();
+            this._initPicScroll();
+        })
     },
     methods: {
-        _initSeller () {
-            axios.get('static/data.json').then((res) => {
-                this.seller = res.data.seller;
-                this.$nextTick(() => {
-                    if (!this.sellerScroll) {
-                        this.sellerScroll = new BScroll(this.$refs.sellerWrapper, {
-                            click: true
-                        });
-                    } else {
-                        this.sellerScroll.refresh();
-                    }
-                })
-            });
+        _initSellerScroll () {
+            if (!this.sellerScroll) {
+                this.sellerScroll = new BScroll(this.$refs.sellerWrapper, {
+                    click: true
+                });
+            } else {
+                this.sellerScroll.refresh();
+            }
         },
         _initPicScroll () {
-            if (this.picsScroll) {
-                return;
+            if (this.seller.pics) {
+                let picW = 120;
+                let margin = 6;
+                let w = (picW + margin) * this.seller.pics.length - margin;
+                this.$refs.picList.style.width = w + "px";
+                this.$nextTick(() => {
+                    if (!this.picScroll) {
+                        this.picScroll = new BScroll(this.$refs.picsWrapper, {
+                            scrollX: true,
+                            eventPassthrough: 'vertical',
+                            click: true
+                        })
+                    } else {
+                        this.picScroll.refresh();
+                    }
+                });
             }
-            const PIC_WIDTH = 120;
-            const MARGIN = 6;
-            let picLen = this.seller.pics.length;
-            this.$refs.picList.style.width = PIC_WIDTH * picLen + MARGIN * (picLen - 1) + 'px';
-            this.picsScroll = new BScroll(this.$refs.picsWrapper, {
-                scrollX: true
-            });
         }
     }
 }
