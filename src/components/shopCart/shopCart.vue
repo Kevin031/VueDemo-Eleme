@@ -2,7 +2,7 @@
     <div class="shopCart">
         <div class="content">
             <div class="content-left" v-on:click="listToggle">
-                <div class="logo-wrapper">
+                <div class="logo-wrapper" ref="carIcon">
                     <div class="badge" v-show="totalCount">
                         {{totalCount}}
                     </div>
@@ -96,6 +96,7 @@ export default {
     },
     created () {
         this.$root.eventHub.$on('cart.add', this.drop); //接收小球动画
+        this.$root.eventHub.$on('cart.add', this.cartAnimation);
     },
     computed: {
         totalPrice () {
@@ -133,6 +134,14 @@ export default {
         }
     },
     methods: {
+        cartAnimation () {
+            setTimeout (() => {
+                this.$refs.carIcon.classList.add('tantantan');
+                setTimeout (() => {
+                    this.$refs.carIcon.classList.remove('tantantan');
+                }, 800);
+            }, 400);
+        },
         _initScroll () {
             this.foodlistScroll = new BScroll(this.$refs.foodlist, {
                 click: true
@@ -274,6 +283,25 @@ export default {
                         color: white;
                     }
                 }
+            }
+            @-webkit-keyframes mymove{
+            0%   { -webkit-transform: scale(1) }
+            25%  { -webkit-transform: scale(.8) }
+            50%  { -webkit-transform: scale(1.1) }
+            75%  { -webkit-transform: scale(.9) }
+            100% { -webkit-transform: scale(1) }
+            }
+            @keyframes mymove{
+            0%   { transform: scale(1) }
+            25%  { transform: scale(.8) }
+            50%  { transform: scale(1.1) }
+            75%  { transform: scale(.9) }
+            100% { transform: scale(1) }
+            }
+            /* 购物车弹弹弹 */
+            .tantantan{
+            -webkit-animation:mymove 1s;
+            animation:mymove 1s;
             }
             .price {
                 display: inline-block;

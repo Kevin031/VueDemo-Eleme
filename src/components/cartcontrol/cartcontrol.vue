@@ -26,7 +26,7 @@ export default {
                 return;
             }
             if (!this.food.count) {
-                Vue.set(this.food, 'count', 0)
+                Vue.set(this.food, 'count', 0);
             }
             this.food.count++;
             // console.log(this.$root.eventHub);

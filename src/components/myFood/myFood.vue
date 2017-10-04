@@ -12,7 +12,7 @@
                 <div class="price">
                     {{'￥'+food.price}}
                 </div>
-                <div class="add">
+                <div class="add" v-on:click="foodAddCart($event)">
                     <span>加入购物车</span>
                 </div>
             </div>
@@ -24,6 +24,13 @@
     export default {
         props: {
             food: Object
+        },
+        methods: {
+            foodAddCart (event) {
+                this.$root.eventHub.$emit('detail.hide', event.target);
+                this.$set(this.food, 'count', 1);
+                this.$root.eventHub.$emit('cart.add', event.target);
+            }
         }
     }
 </script>
@@ -75,8 +82,8 @@
     left: 10%;
     border-radius: 10px;
     overflow: hidden;
-    animation: foodshow 5s;
-    -webkit-animation: foodshow 0.8s;
+    animation: foodshow 0.4s;
+    -webkit-animation: foodshow 0.4s;
     .title {
         font-size: 20px;
         font-weight: bold;

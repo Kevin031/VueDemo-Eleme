@@ -81,6 +81,7 @@ export default {
                 this._calculateHeight();
             })
         });
+        this.$root.eventHub.$on('detail.hide', this.hideBackdrop);
     },
     computed: {
         menuCurrentIndex () {
@@ -148,7 +149,6 @@ export default {
             this.$nextTick(() => {
                 this.showMyFood = true;
             });
-            console.log(this.showMyFood);
         },
         hideBackdrop () {
             this.showMyFood = false;
